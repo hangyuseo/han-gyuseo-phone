@@ -5,120 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>한규서 스마트폰 엿보기</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; }
-        body { background-color: #0d0e15; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .phone-container { width: 360px; height: 720px; background: #1c1c1e; border-radius: 48px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); position: relative; overflow: hidden; border: 4px solid #3a3a3c; }
-        .notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 28px; background-color: #000; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; z-index: 1000; }
-        .status-bar { height: 38px; padding: 8px 20px 0; display: flex; justify-content: space-between; font-size: 12px; color: #fff; position: absolute; top: 0; width: 100%; z-index: 999; }
-        .screen { height: 100%; width: 100%; position: absolute; top: 0; left: 0; display: none; flex-direction: column; background-size: cover; background-position: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
+        body { background: #0d0e15; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .phone { width: 340px; height: 680px; background: #1c1c1e; border-radius: 40px; border: 4px solid #3a3a3c; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 110px; height: 24px; background: #000; border-radius: 0 0 14px 14px; z-index: 10; }
+        .status { padding: 8px 20px; font-size: 11px; display: flex; justify-content: space-between; }
+        .screen { flex: 1; display: none; flex-direction: column; padding: 20px; overflow-y: auto; }
         .screen.active { display: flex; }
-        #lock-screen { background-image: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=600&q=80'); justify-content: space-between; padding: 60px 20px 40px; color: #fff; text-align: center; }
-        .lock-clock { font-size: 54px; font-weight: 200; margin-top: 20px; }
-        .notification-card { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 18px; padding: 12px 15px; text-align: left; color: #fff; margin-top: 10px; border: 1px solid rgba(255, 255, 255, 0.2); }
-        #home-screen { background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80'); padding: 60px 20px 30px; justify-content: space-between; }
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 15px; }
-        .app-icon { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .icon-box { width: 56px; height: 56px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: white; position: relative; }
-        .badge { position: absolute; top: -4px; right: -4px; background: #ff3b30; color: white; font-size: 10px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .app-name { font-size: 11px; color: #fff; margin-top: 4px; }
-        .dock { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px); border-radius: 28px; padding: 12px 15px; display: flex; justify-content: space-around; }
-        .app-header { height: 70px; padding-top: 30px; background: #f7f7f7; display: flex; align-items: center; padding-left: 15px; padding-right: 15px; border-bottom: 1px solid #e5e5e5; position: relative; }
-        .back-btn { background: none; border: none; font-size: 16px; color: #007aff; cursor: pointer; }
-        .app-title { position: absolute; left: 50%; transform: translateX(-50%); font-weight: 600; font-size: 15px; }
-        #kakao-app { background: #abc1d1; }
-        .chat-list { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .chat-bubble { max-width: 75%; padding: 9px 12px; border-radius: 14px; font-size: 13px; line-height: 1.4; }
-        .chat-bubble.other { background: #ffffff; align-self: flex-start; border-top-left-radius: 2px; }
-        .chat-bubble.me { background: #fee500; align-self: flex-end; border-top-right-radius: 2px; }
-        #memo-app { background: #f2f2f7; }
-        .memo-container { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .memo-card { background: white; padding: 15px; border-radius: 12px; }
-        .memo-date { font-size: 11px; color: #8e8e93; margin-bottom: 5px; }
-        .memo-title { font-weight: bold; font-size: 14px; margin-bottom: 6px; }
-        .memo-preview { font-size: 12px; color: #3a3a3c; line-height: 1.4; }
-        #gallery-app { background: #000; color: #fff; }
-        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; }
-        .gallery-item { aspect-ratio: 1; background-size: cover; background-position: center; background-color: #222; }
-        .home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 130px; height: 5px; background: rgba(255, 255, 255, 0.8); border-radius: 3px; cursor: pointer; z-index: 1000; }
-        .sound-trigger-btn { background: #ff3b30; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; margin-top: 10px; cursor: pointer; width: 100%; text-align: center; }
+        #lock { text-align: center; justify-content: space-between; background: linear-gradient(180deg, #2c3e50, #000); }
+        .clock { font-size: 48px; font-weight: 200; margin-top: 40px; }
+        .card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 12px; border-radius: 14px; text-align: left; margin-top: 20px; cursor: pointer; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
+        .icon { background: #333; height: 70px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
+        .icon span { font-size: 11px; margin-top: 4px; }
+        .chat { background: #fee500; color: #000; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 13px; max-width: 80%; }
+        .btn-sound { background: #ff3b30; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; width: 100%; margin-top: 15px; cursor: pointer; }
+        .home-btn { height: 20px; background: #1c1c1e; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .home-bar { width: 100px; height: 4px; background: #fff; border-radius: 2px; }
     </style>
 </head>
 <body>
-    <div class="phone-container">
+    <div class="phone">
         <div class="notch"></div>
-        <div class="status-bar"><span>09:10</span><span>LTE 80%</span></div>
-        <div class="screen active" id="lock-screen" onclick="unlockPhone()">
+        <div class="status"><span>09:10</span><span>LTE 80%</span></div>
+        
+        <!-- 잠금화면 -->
+        <div class="screen active" id="lock" onclick="goScreen('home')">
             <div>
-                <div class="lock-clock">09:10</div>
-                <div style="font-size:15px; opacity:0.9;">9월 10일 월요일</div>
-                <div class="notification-card" onclick="event.stopPropagation(); openApp('kakao')">
-                    <div style="font-size:11px; opacity:0.8; display:flex; justify-content:space-between;"><span>카카오톡</span><span>방금 전</span></div>
-                    <div style="font-size:13px; font-weight:bold; margin-top:2px;">친엄마</div>
-                    <div style="font-size:12px; opacity:0.9;">규서야... 엄마가 학교 앞에 선물 두고 갔다.</div>
+                <div class="clock">09:10</div>
+                <div style="font-size:14px; opacity:0.8;">9월 10일 월요일</div>
+                <div class="card" onclick="event.stopPropagation(); goScreen('kakao')">
+                    <div style="font-size:10px; opacity:0.7;">카카오톡 • 방금 전</div>
+                    <div style="font-weight:bold; margin-top:2px;">친엄마</div>
+                    <div style="font-size:12px;">규서야... 엄마가 학교 앞에 선물 두고 갔다.</div>
                 </div>
             </div>
-            <div style="font-size:13px; opacity:0.7; margin-bottom:10px;">화면을 터치해서 잠금 해제</div>
+            <div style="font-size:12px; opacity:0.6; margin-bottom:20px;">터치하여 잠금 해제</div>
         </div>
 
-        <div class="screen" id="home-screen">
-            <div class="app-grid">
-                <div class="app-icon" onclick="openApp('kakao')">
-                    <div class="icon-box" style="background: #fee500; color: #3c1e1e;">💬<div class="badge">2</div></div>
-                    <div class="app-name">카카오톡</div>
-                </div>
-                <div class="app-icon" onclick="openApp('memo')">
-                    <div class="icon-box" style="background: #f8d64e; color: #fff;">📝</div>
-                    <div class="app-name">메모장</div>
-                </div>
-                <div class="app-icon" onclick="openApp('gallery')">
-                    <div class="icon-box" style="background: linear-gradient(45deg, #405de6, #833ab4, #e1306c); color: #fff;">🖼️</div>
-                    <div class="app-name">갤러리</div>
-                </div>
-            </div>
-            <div class="dock">
-                <div class="app-icon" onclick="openApp('kakao')"><div class="icon-box" style="background: #fee500;">💬</div></div>
-                <div class="app-icon" onclick="openApp('memo')"><div class="icon-box" style="background: #f8d64e;">📝</div></div>
-                <div class="app-icon" onclick="openApp('gallery')"><div class="icon-box" style="background: #4cd964;">🖼️</div></div>
-            </div>
-        </div>
+        <!-- 홈화면 -->
+        
 
-        <div class="screen" id="kakao-app">
-            <div class="app-header"><button class="back-btn" onclick="goHome()">◀ 홈</button><div class="app-title">친엄마</div></div>
-            <div class="chat-list">
-                <div class="chat-bubble other">규서야... 엄마가 미안해. 학교 앞에 선물 두고 갔어. 한 번만 연락주면 안 될까?</div>
-                <div class="chat-bubble me">찾아오지 마세요. 이런 거 필요 없어요.</div>
-                <div class="chat-bubble me">규민이한테도 근처에 오지 마시고요.</div>
-                <button class="sound-trigger-btn" onclick="playShoeSound()">👠 '또각또각...' 트라우마 소리 재생</button>
-            </div>
-        </div>
-
-        <div class="screen" id="memo-app">
-            <div class="app-header"><button class="back-btn" onclick="goHome()">◀ 홈</button><div class="app-title">비밀 메모</div></div>
-            <div class="memo-container">
-                <div class="memo-card">
-                    <div class="memo-date">최근 수정</div>
-                    <div class="memo-title">또 그 구두 소리</div>
-                    <div class="memo-preview">오늘 길에서 또각또각 소리가 들렸다.<br>세 살 때 날 버리고 가던 날 들렸던 그 구두 발자국 소리...</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="screen" id="gallery-app">
-            <div class="app-header" style="background:#1c1c1e; color:#fff;"><button class="back-btn" onclick="goHome()">◀ 홈</button><div class="app-title">추억 앨범</div></div>
-            <div class="gallery-grid">
-                <div class="gallery-item" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80');"></div>
-                <div class="gallery-item" style="background-image: url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=300&q=80');"></div>
-            </div>
-        </div>
-
-        <div class="home-bar" onclick="goHome()"></div>
-    </div>
-
-    <script>
-        function unlockPhone() { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById('home-screen').classList.add('active'); }
-        function openApp(appName) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(appName + '-app').classList.add('active'); }
-        function goHome() { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById('home-screen').classList.add('active'); }
-        function playShoeSound() { alert("👠 (또각... 또각... 굽 소리가 귓가에 맴돌며 규서의 호흡이 가빠집니다.)"); }
-    </script>
-</body>
-</html>
